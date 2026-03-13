@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intermediate Web Dev Project</title>
+    <style>
+        /* --- GLOBAL STYLES --- */
+        :root {
+            --primary: #4f46e5;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --light: #f3f4f6;
+            --dark: #1f2937;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: #e5e7eb;
+            color: var(--dark);
+        }
+
+        /* --- 3. FLEXBOX NAVIGATION --- */
+        header {
+            background-color: var(--dark);
+            color: white;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav ul {
+            display: flex; /* Flexbox for nav links */
+            list-style: none;
+            gap: 20px;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* --- 3. RESPONSIVE CSS GRID LAYOUT --- */
+        .main-container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            /* Two equal columns on desktop */
+            grid-template-columns: 1fr 1fr; 
+            gap: 30px;
+        }
+
+        /* Responsive: Stack columns on mobile */
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- 1. CONTACT FORM STYLING --- */
+        h3 { margin-top: 0; color: var(--primary); }
+        .form-control { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; }
+        input[type="text"], input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        .btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-submit { background: var(--primary); color: white; }
+        .btn-submit:hover { background: #4338ca; }
+
+        /* --- 4. TO-DO LIST STYLING --- */
+        .todo-header { display: flex; gap: 10px; margin-bottom: 20px; }
+        #todo-list { list-style: none; padding: 0; }
+        .todo-item {
+            background: var(--light);
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--secondary);
+        }
+        .delete-icon {
+            color: var(--danger);
+            cursor: pointer;
+            font-weight: bold;
+            padding: 0 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo"><strong>WebDev</strong> Learner</div>
+        <nav>
+            <ul>
+                <li>Home</li>
+                <li>Projects</li>
+                <li>Contact</li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="main-container">
+        <section class="card">
+            <h3>Interactive Tasks</h3>
+            <div class="todo-header">
+                <input type="text" id="todoInput" placeholder="Add a new goal...">
+                <button class="btn btn-submit" style="width: auto;" onclick="addTodo()">Add</button>
+            </div>
+            <ul id="todo-list">
+                </ul>
+        </section>
+
+        <section class="card">
+            <h3>Get In Touch</h3>
+            <form id="contactForm">
+                <div class="form-control">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" placeholder="John Doe">
+                </div>
+                <div class="form-control">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="john@example.com">
+                </div>
+                <button type="submit" class="btn btn-submit">Submit Details</button>
+            </form>
+            <p id="validationMessage" style="text-align: center; font-weight: bold; margin-top: 15px;"></p>
+        </section>
+    </div>
+
+    <script>
+        /* --- 2. JAVASCRIPT FORM VALIDATION --- */
+        const contactForm = document.getElementById('contactForm');
+        const validationMsg = document.getElementById('validationMessage');
+
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Stop page refresh
+            
+            const nameVal = document.getElementById('name').value.trim();
+            const emailVal = document.getElementById('email').value.trim();
+
+            if (nameVal === "" || emailVal === "") {
+                validationMsg.textContent = "❌ Please fill out all fields.";
+                validationMsg.style.color = "#ef4444";
+            } else if (!emailVal.includes("@")) {
+                validationMsg.textContent = "❌ Enter a valid email address.";
+                validationMsg.style.color = "#ef4444";
+            } else {
+                validationMsg.textContent = "✅ Success! Form is valid.";
+                validationMsg.style.color = "#10b981";
+                contactForm.reset();
+            }
+        });
+
+        /* --- 4. DYNAMIC DOM MANIPULATION --- */
+        function addTodo() {
+            const input = document.getElementById('todoInput');
+            const list = document.getElementById('todo-list');
+            
+            if (input.value.trim() === "") return;
+
+            // Step A: Create the <li> element
+            const li = document.createElement('li');
+            li.className = 'todo-item';
+
+            // Step B: Set the HTML content (Text + Delete button)
+            li.innerHTML = `
+                <span>${input.value}</span>
+                <span class="delete-icon" onclick="removeTask(this)">Remove</span>
+            `;
+
+            // Step C: Append to the <ul>
+            list.appendChild(li);
+
+            // Clear input for next task
+            input.value = "";
+        }
+
+        // Function to remove item from DOM
+        function removeTask(element) {
+            element.parentElement.remove();
+        }
+    </script>
+</body>
+</html>
